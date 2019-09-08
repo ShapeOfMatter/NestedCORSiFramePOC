@@ -56,7 +56,7 @@
         };
 
         const defaultClient = document.currentScript.getAttribute("data-default") || '';
-        const gotClientPort = loaderUtilities.loadTool(`https://dhmnmivhwb1gk.cloudfront.net/dev/client_shim_version_N1.html#${defaultClient}`)
+        const gotClientPort = loaderUtilities.loadTool(`https://dhmnmivhwb1gk.cloudfront.net/dev/shim.html#${defaultClient}`)
             .then(
                 (uri)=>{
                     return loaderUtilities.loadTool(uri);
