@@ -24,7 +24,8 @@
         openDB.onupgradeneeded = (e)=>{
             e.target.result.createObjectStore("chosen_clients");
         };
-        const clientLoaded = indexedDBPromise(openDB)
+
+        indexedDBPromise(openDB)
             .then(
                 (db)=>{
                     const tx = db.transaction("chosen_clients", "readonly");

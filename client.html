@@ -5,19 +5,19 @@
     <title>The stupidest client.</title>
     <meta charset="UTF-8">
     <script type="text/javascript">
-      const parent = window.parent;
       const pipe = new MessageChannel();
-      const mine = pipe.port1;
-      const theirs = pipe.port2;
-      mine.onmessage = (e)=>{
+      const work = (request)=>{
+          return "555";
+      };
+      pipe.port1.onmessage = (e)=>{
           const newPort = e.data.port;
           const request = e.data.resource;
-          const response = "555"
-          console.log(`Receipt requested for [${request.method}]${request.url}; returning ${response}`)
+          const response = work(request);
+          console.log(`Receipt requested for [${request.method}]${request.url}; returning ${response}`);
           newPort.postMessage(response);
           newPort.close();
       };
-      parent.postMessage(theirs, '*', [theirs]);
+      window.parent.postMessage(pipe.port2, '*', [pipe.port2]); //should I be more restrictive of the recipient?
     </script>
   </head>
   <body</body>

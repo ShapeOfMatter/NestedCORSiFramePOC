@@ -1,5 +1,5 @@
-((clientName)=>{
-    if(typeof window[clientName] === 'undefined'){
+((toolName)=>{
+    if(typeof window[toolName] === 'undefined'){
 
         const origin = (uri)=>{
             const parser = window.document.createElement('a');
@@ -7,14 +7,14 @@
             return `${parser.protocol}//${parser.host}`;
         };
 
-	const domReady = new Promise(resolve => {
-		if (document.readyState === "loading") {
-			document.addEventListener('DOMContentLoaded', resolve);
-		}
-		else {
-			resolve();
-		}
-	});
+        const domReady = new Promise((resolve, reject) => {
+            if (document.readyState === "loading") {
+                document.addEventListener('DOMContentLoaded', resolve);
+            }
+            else {
+                resolve();
+            }   // add error handler?
+        });
 
         const loadTool = (uri)=>{
             return new Promise((resolve, reject)=>{
@@ -25,14 +25,14 @@
                 tag.style = "visibility: hidden";
                 window.addEventListener("message",
                     (e)=>{
-                        if(e.origin == origin(uri)){ //it may be possible to refine the origin check.
+                        if(e.origin == origin(uri)){ //is it possible to refine the origin check.
                             resolve(e.data);
                         }
                     }, 
                     false);
                 domReady.then(()=>{
                     document.body.appendChild(tag);
-		});
+                });
             });   // add error handler?
         };
 
@@ -43,7 +43,7 @@
                     resolve(e.data);
                     disposableChannel.port1.close();
                 };
-		port.postMessage(
+                port.postMessage(
                     {
                         resource: resource,
                         port: disposableChannel.port2
@@ -59,7 +59,7 @@
                     return loadTool(uri);
                 });
 
-        window[clientName] = {
+        window[toolName] = {
             fetch: (request)=>{
                 return gotClientPort
                     .then((clientPort)=>{
