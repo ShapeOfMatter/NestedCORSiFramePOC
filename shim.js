@@ -52,7 +52,7 @@
                         },
                         [disposableChannel.port2]);
                 });
-            };
+            },
         };
 
         const defaultClient = document.currentScript.getAttribute("data-default") || '';
