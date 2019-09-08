@@ -13,7 +13,7 @@
           const newPort = e.data.port;
           const request = e.data.resource;
           const response = "555"
-          console.log(`Receipt requested for [${request.method}]${request.url}; retruning ${response}`)
+          console.log(`Receipt requested for [${request.method}]${request.url}; returning ${response}`)
           newPort.postMessage(response);
           newPort.close();
       };

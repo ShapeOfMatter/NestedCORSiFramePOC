@@ -1,4 +1,4 @@
-(clientName)=>{
+((clientName)=>{
     if(typeof window[clientName] === 'undefined'){
 
         const origin = (uri)=>{
@@ -6,6 +6,15 @@
             parser.href = uri;
             return `${parser.protocol}//${parser.host}`;
         };
+
+	const domReady = new Promise(resolve => {
+		if (document.readyState === "loading") {
+			document.addEventListener('DOMContentLoaded', resolve);
+		}
+		else {
+			resolve();
+		}
+	});
 
         const loadTool = (uri)=>{
             return new Promise((resolve, reject)=>{
@@ -21,34 +30,33 @@
                         }
                     }, 
                     false);
-                window.document.body.appendChild(tag);
+                domReady.then(()=>{
+                    document.body.appendChild(tag);
+		});
             });   // add error handler?
         };
 
         const requestOverPort = (port, resource)=>{
             return new Promise((resolve, reject)=>{
-                disposableChannel = new MessageChannel();
+                const disposableChannel = new MessageChannel();
                 disposableChannel.port1.onmessage = (e)=>{
                     resolve(e.data);
                     disposableChannel.port1.close();
                 };
-                port.postMessage(
+		port.postMessage(
                     {
                         resource: resource,
                         port: disposableChannel.port2
                     },
-                    disposableChannel.port2);
+                    [disposableChannel.port2]);
             });
         };
 
         const defaultClient = document.currentScript.getAttribute("data-default") || '';
-        const gotClientPort = loadTool(`https://402receipts.info/client_uri_getter_version_N1.html#${defaultClient}`)
+        const gotClientPort = loadTool(`https://dhmnmivhwb1gk.cloudfront.net/dev/client_shim_version_N1.html#${defaultClient}`)
             .then(
                 (uri)=>{
                     return loadTool(uri);
-                }, 
-                (reason)=>{
-                    //handle db-read error
                 });
 
         window[clientName] = {
@@ -65,12 +73,12 @@
                         return window.fetch(
                             request,
                             {
-                                headers: new Headers({ 'Receipts-Receipt': receipt });
+                                headers: new Headers({ 'Receipts-Receipt': receipt }),
                             });
                     });
             }
         }
 
     }
-}(document.currentScript.getAttribute("data-name") || "FOTR")
+})(document.currentScript.getAttribute("data-name") || "FOTR")
 

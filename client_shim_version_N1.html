@@ -20,7 +20,7 @@
                 });
         };
 
-        const openDB = indexedDB.open("FOTR", 0);
+        const openDB = indexedDB.open("FOTR", 1);
         openDB.onupgradeneeded = (e)=>{
             e.target.result.createObjectStore("chosen_clients");
         };
@@ -38,7 +38,7 @@
                 })
             .then(
                 (db_result)=>{
-                    window.parent.postMessage(db_result.uri || defaultClient);
+                    window.parent.postMessage(db_result.uri || defaultClient, '*');
                 }, 
                 (reason)=>{
                     //handle db-read error
