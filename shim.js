@@ -37,24 +37,24 @@
                     });
                 });   // add error handler?
             },
+            
+            requestOverPort: (port, resource)=>{
+                return new Promise((resolve, reject)=>{
+                    const disposableChannel = new MessageChannel();
+                    disposableChannel.port1.onmessage = (e)=>{
+                        resolve(e.data);
+                        disposableChannel.port1.close();
+                    };
+                    port.postMessage(
+                        {
+                            resource: resource,
+                            port: disposableChannel.port2
+                        },
+                        [disposableChannel.port2]);
+                });
+            },
         };
             
-        const requestOverPort = (port, resource)=>{
-            return new Promise((resolve, reject)=>{
-                const disposableChannel = new MessageChannel();
-                disposableChannel.port1.onmessage = (e)=>{
-                    resolve(e.data);
-                    disposableChannel.port1.close();
-                };
-                port.postMessage(
-                    {
-                        resource: resource,
-                        port: disposableChannel.port2
-                    },
-                    [disposableChannel.port2]);
-            });
-        };
-
         const defaultClient = document.currentScript.getAttribute("data-default") || '';
         const gotClientPort = loaderUtilities.loadTool(`https://dhmnmivhwb1gk.cloudfront.net/dev/shim.html#${defaultClient}`);
 
@@ -62,7 +62,7 @@
             fetch: (request)=>{
                 return gotClientPort
                     .then((clientPort)=>{
-                        return requestOverPort(
+                        return loaderUtilities.requestOverPort(
                             clientPort,
                             {
                                 url: request.url,

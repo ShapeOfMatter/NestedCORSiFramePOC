@@ -41,6 +41,22 @@
                     });
                 });   // add error handler?
             },
+            
+            requestOverPort: (port, resource)=>{
+                return new Promise((resolve, reject)=>{
+                    const disposableChannel = new MessageChannel();
+                    disposableChannel.port1.onmessage = (e)=>{
+                        resolve(e.data);
+                        disposableChannel.port1.close();
+                    };
+                    port.postMessage(
+                        {
+                            resource: resource,
+                            port: disposableChannel.port2
+                        },
+                        [disposableChannel.port2]);
+                });
+            },
         };
         
         const indexedDBPromise = (request)=>{
@@ -78,8 +94,20 @@
                     return loaderUtilities.loadTool(clientURI);
                 })//handle db-read error?
             .then(
-                (port)=>{
-                    window.parent.postMessage(port, '*', [port]);
+                (innerPort)=>{
+                    const outerChannel = new MessageChannel();
+                    outerChannel.port1.onmessage = (e)=>{
+                        const newPort = e.data.port;
+                        const request = e.data.resource;
+                        console.log(`Forwarding request for [${request.method}]${request.url}.`);
+                        loaderUtilities.requestOverPort(innerPort, request)
+                            .then((response)=>{
+                                console.log(`Forwarding requested value "${response}" for [${request.method}]${request.url}`);
+                                newPort.postMessage();
+                                newPort.close();
+                            });
+                    };
+                    window.parent.postMessage(outerChannel.port2, '*', [outerChannel.port2]);
                 });//handle tool-load error?
     </script>
   </head>
