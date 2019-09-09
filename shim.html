@@ -103,7 +103,7 @@
                         loaderUtilities.requestOverPort(innerPort, request)
                             .then((response)=>{
                                 console.log(`Forwarding requested value "${response}" for [${request.method}]${request.url}`);
-                                newPort.postMessage();
+                                newPort.postMessage(response);
                                 newPort.close();
                             });
                     };
