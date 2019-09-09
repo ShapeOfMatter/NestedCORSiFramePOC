@@ -76,7 +76,7 @@
                 (db_result)=>{
                     const clientURI = db_result.uri || defaultClient;
                     return loaderUtilities.loadTool(clientURI);
-                });//handle db-read error?
+                })//handle db-read error?
             .then(
                 (port)=>{
                     window.parent.postMessage(port);
