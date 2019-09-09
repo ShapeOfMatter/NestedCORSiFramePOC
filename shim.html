@@ -79,7 +79,7 @@
                 })//handle db-read error?
             .then(
                 (port)=>{
-                    window.parent.postMessage(port);
+                    window.parent.postMessage(port, '*', [port]);
                 });//handle tool-load error?
     </script>
   </head>
